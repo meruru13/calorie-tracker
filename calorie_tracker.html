@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Calorie Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9ffe5;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    header {
+      background-color: #a8d5ba;
+      color: white;
+      padding: 1rem;
+      width: 100%;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    main {
+      width: 90%;
+      max-width: 400px;
+      margin-top: 1rem;
+    }
+    .input-section, .summary-section {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .input-section h3, .summary-section h3 {
+      margin: 0 0 1rem;
+    }
+    .input-section input, .input-section button {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .input-section button {
+      background-color: #ffc107;
+      color: #333;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .input-section button:hover {
+      background-color: #e0a800;
+    }
+    .summary-section p {
+      margin: 0.5rem 0;
+    }
+    footer {
+      margin-top: 1rem;
+      font-size: 0.8rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <header>Simple Calorie Tracker</header>
+  <main>
+    <div class="input-section">
+      <h3>Log a Meal</h3>
+      <input type="text" id="mealName" placeholder="Meal Name (optional)">
+      <input type="number" id="calories" placeholder="Calories" min="0">
+      <input type="number" id="protein" placeholder="Protein (g)" min="0">
+      <button onclick="addMeal()">Add Meal</button>
+    </div>
+
+    <div class="summary-section">
+      <h3>Today's Summary</h3>
+      <p id="goal">Goal Calories: <span id="goalCalories">2000</span></p>
+      <p>Total Calories: <span id="totalCalories">0</span></p>
+      <p>Total Protein: <span id="totalProtein">0</span> g</p>
+      <p>Remaining Calories: <span id="remainingCalories">2000</span></p>
+      <p id="status"></p>
+    </div>
+
+    <div class="input-section">
+      <h3>Set Calorie Goal</h3>
+      <input type="number" id="newGoal" placeholder="New Goal Calories" min="0">
+      <button onclick="setGoal()">Set Goal</button>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Simple Calorie Tracker. All rights reserved.
+  </footer>
+
+  <script>
+    const goalCaloriesElement = document.getElementById('goalCalories');
+    const totalCaloriesElement = document.getElementById('totalCalories');
+    const totalProteinElement = document.getElementById('totalProtein');
+    const remainingCaloriesElement = document.getElementById('remainingCalories');
+    const statusElement = document.getElementById('status');
+
+    let goalCalories = parseInt(localStorage.getItem('goalCalories')) || 2000;
+    let totalCalories = 0;
+    let totalProtein = 0;
+
+    function updateUI() {
+      goalCaloriesElement.textContent = goalCalories;
+      totalCaloriesElement.textContent = totalCalories;
+      totalProteinElement.textContent = totalProtein;
+      remainingCaloriesElement.textContent = goalCalories - totalCalories;
+
+      if (totalCalories > goalCalories) {
+        statusElement.textContent = 'You have exceeded your goal!';
+        statusElement.style.color = 'red';
+      } else {
+        statusElement.textContent = 'You are within your goal!';
+        statusElement.style.color = 'green';
+      }
+    }
+
+    function addMeal() {
+      const calories = parseInt(document.getElementById('calories').value) || 0;
+      const protein = parseInt(document.getElementById('protein').value) || 0;
+
+      totalCalories += calories;
+      totalProtein += protein;
+      updateUI();
+      saveProgress();
+
+      document.getElementById('calories').value = '';
+      document.getElementById('protein').value = '';
+    }
+
+    function setGoal() {
+      const newGoal = parseInt(document.getElementById('newGoal').value);
+      if (newGoal > 0) {
+        goalCalories = newGoal;
+        localStorage.setItem('goalCalories', goalCalories);
+        updateUI();
+      }
+      document.getElementById('newGoal').value = '';
+    }
+
+    function saveProgress() {
+      localStorage.setItem('totalCalories', totalCalories);
+      localStorage.setItem('totalProtein', totalProtein);
+    }
+
+    function loadProgress() {
+      totalCalories = parseInt(localStorage.getItem('totalCalories')) || 0;
+      totalProtein = parseInt(localStorage.getItem('totalProtein')) || 0;
+      updateUI();
+    }
+
+    // Load data on page load
+    loadProgress();
+  </script>
+</body>
+</html>
